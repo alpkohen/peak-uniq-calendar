@@ -32,6 +32,30 @@ export type ClientWithPricing = Client & {
   pricing: ClientPricing | null;
 };
 
+export type PipelineCategory = "kesin" | "hot";
+
+export type HotAllocation = {
+  trainerId: string;
+  month: string;
+  days: number;
+};
+
+export type HotClient = {
+  id: string;
+  name: string;
+  category: PipelineCategory;
+  potentialDays: number;
+  dailyPrice: number;
+  allocations: HotAllocation[];
+};
+
+export type HotTrainerMonth = {
+  trainerId: string;
+  trainerName: string;
+  month: string;
+  days: number;
+};
+
 export type Booking = {
   id: string;
   trainer_id: string;

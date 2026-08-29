@@ -70,8 +70,31 @@ export function occupancyFromDeliveryDays(deliveryDays: number): number {
   return deliveryDays / MAX_MONTHLY_DELIVERY_DAYS;
 }
 
+export const CAPACITY_LEGEND_BANDS_DARK = [
+  { className: "occ-legend occ-legend--empty", label: "Boş", range: "0 gün (%0)" },
+  { className: "occ-legend occ-legend--low", label: "1–4 gün", range: "%5–%20" },
+  { className: "occ-legend occ-legend--mid-low", label: "5–9 gün", range: "%25–%45" },
+  { className: "occ-legend occ-legend--mid", label: "10–14 gün", range: "%50–%70" },
+  { className: "occ-legend occ-legend--high", label: "15–19 gün", range: "%75–%95" },
+  { className: "occ-legend occ-legend--full", label: "20 gün", range: "%100" },
+] as const;
+
+export function occupancyColorDark(
+  occupancy: number,
+  overTarget = false,
+): string {
+  if (overTarget || occupancy > 1) return "occ-cell occ-cell--critical";
+  const pct = Math.min(occupancy, 1);
+  if (pct >= 1) return "occ-cell occ-cell--full";
+  if (pct >= 0.75) return "occ-cell occ-cell--high";
+  if (pct >= 0.5) return "occ-cell occ-cell--mid";
+  if (pct >= 0.25) return "occ-cell occ-cell--mid-low";
+  if (pct > 0) return "occ-cell occ-cell--low";
+  return "occ-cell occ-cell--empty";
+}
+
 export function occupancyColor(occupancy: number, overTarget = false): string {
-  if (overTarget) return "bg-red-600 text-white";
+  if (overTarget || occupancy > 1) return "bg-red-600 text-white";
   const pct = Math.min(occupancy, 1);
   if (pct >= 1) return "bg-red-500 text-white";
   if (pct >= 0.75) return "bg-orange-400 text-white";

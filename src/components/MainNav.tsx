@@ -8,6 +8,7 @@ const navItems = [
   { href: "/", label: "Takvim" },
   { href: "/data", label: "Veriler" },
   { href: "/clients", label: "Fiyat" },
+  { href: "/pipeline", label: "Pipeline" },
   { href: "/revenue", label: "Gelir" },
 ];
 

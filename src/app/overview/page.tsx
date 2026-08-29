@@ -1,6 +1,7 @@
 import { calculateCapacity } from "@/lib/capacity";
 import { getSupabaseConfigError, formatError } from "@/lib/config";
 import { getActiveTrainers, getBookings } from "@/lib/data";
+import { flattenHotAllocations, getHotClients } from "@/lib/hot";
 import { monthRangeFromBookings } from "@/lib/slots";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { HeatMap } from "@/components/HeatMap";
@@ -20,9 +21,14 @@ export default async function OverviewPage() {
   }
 
   try {
-    const trainers = await getActiveTrainers();
-    const bookings = await getBookings();
+    const [trainers, bookings, hotClients] = await Promise.all([
+      getActiveTrainers(),
+      getBookings(),
+      getHotClients(),
+    ]);
     const months = monthRangeFromBookings(bookings);
+    const kesinAllocations = flattenHotAllocations(hotClients, trainers, "kesin");
+    const hotAllocations = flattenHotAllocations(hotClients, trainers, "hot");
 
     const capacities = trainers.flatMap((trainer) =>
       months.map((month) =>
@@ -48,6 +54,8 @@ export default async function OverviewPage() {
             months={months}
             capacities={capacities}
             bookings={bookings}
+            kesinAllocations={kesinAllocations}
+            hotAllocations={hotAllocations}
           />
         )}
       </>

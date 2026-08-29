@@ -24,6 +24,7 @@ export default async function ClientsPage() {
       getClientsWithPricing(),
       getBookings(),
     ]);
+    const pricedClients = clients.filter((client) => client.status !== "hot");
     const suggestedNames = discoverClientLabels(bookings);
     const trainersByLabel = trainersByClientLabel(bookings);
 
@@ -34,7 +35,7 @@ export default async function ClientsPage() {
           subtitle="Günlük satış fiyatı ve eğitmen hakedişi — müşteri bazında."
         />
         <ClientPricingView
-          initialClients={clients}
+          initialClients={pricedClients}
           suggestedNames={suggestedNames}
           trainersByLabel={trainersByLabel}
         />

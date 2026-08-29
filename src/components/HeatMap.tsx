@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
-import type { BookingWithClient, CapacitySummary } from "@/lib/types";
+import type { BookingWithClient, CapacitySummary, HotTrainerMonth } from "@/lib/types";
 import {
   assignmentsForTrainerMonth,
   formatAssignmentDates,
   type AssignmentBlock,
 } from "@/lib/assignments";
 import { CapacityTotalsTable } from "@/components/CapacityTotalsTable";
+import { OverviewKpiStrip } from "@/components/OverviewKpiStrip";
 import {
   CAPACITY_LEGEND_BANDS,
   formatDeliveryCapacity,
@@ -23,6 +24,8 @@ type Props = {
   months: string[];
   capacities: CapacitySummary[];
   bookings: BookingWithClient[];
+  kesinAllocations: HotTrainerMonth[];
+  hotAllocations: HotTrainerMonth[];
 };
 
 function formatMonth(month: string): string {
@@ -31,7 +34,13 @@ function formatMonth(month: string): string {
   return date.toLocaleDateString("tr-TR", { month: "short", year: "2-digit" });
 }
 
-export function HeatMap({ months, capacities, bookings }: Props) {
+export function HeatMap({
+  months,
+  capacities,
+  bookings,
+  kesinAllocations,
+  hotAllocations,
+}: Props) {
   const trainers = useMemo(
     () =>
       Array.from(
@@ -71,6 +80,13 @@ export function HeatMap({ months, capacities, bookings }: Props) {
 
   return (
     <div className="space-y-5">
+      <OverviewKpiStrip
+        capacities={capacities}
+        kesinAllocations={kesinAllocations}
+        hotAllocations={hotAllocations}
+        months={months}
+      />
+
       <p className="text-sm text-slate-500">
         + ile satırı açın: o ay hangi müşteride oldukları görünür.
       </p>
@@ -196,7 +212,12 @@ export function HeatMap({ months, capacities, bookings }: Props) {
         </div>
       </div>
 
-      <CapacityTotalsTable months={months} capacities={capacities} />
+      <CapacityTotalsTable
+        months={months}
+        capacities={capacities}
+        kesinAllocations={kesinAllocations}
+        hotAllocations={hotAllocations}
+      />
     </div>
   );
 }
