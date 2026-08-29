@@ -4,6 +4,7 @@ import type {
   Booking,
   BookingWithClient,
   Client,
+  ClientPricing,
   SyncLog,
   Trainer,
   TrainerSyncHealth,
@@ -27,6 +28,18 @@ export async function getClients(): Promise<Client[]> {
   const { data, error } = await supabase.from("clients").select("*");
   if (error) throw error;
   return (data ?? []) as Client[];
+}
+
+export async function getClientPricing(): Promise<ClientPricing[]> {
+  const supabase = createSupabaseAdmin();
+  const { data, error } = await supabase.from("client_pricing").select("*");
+  if (error) {
+    if (error.message.includes("client_pricing") || error.code === "PGRST205") {
+      return [];
+    }
+    throw error;
+  }
+  return (data ?? []) as ClientPricing[];
 }
 
 export async function getBookings(): Promise<BookingWithClient[]> {

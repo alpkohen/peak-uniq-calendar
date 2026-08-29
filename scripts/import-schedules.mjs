@@ -27,17 +27,75 @@ function isWorkday(dateStr) {
   return !TR_HOLIDAYS.has(dateStr);
 }
 
+const MUHAMMED_EMPTY_RANGES = [
+  ["2026-09-28", "2026-09-30"],
+  ["2026-10-01", "2026-10-18"],
+  ["2026-10-21", "2026-10-23"],
+  ["2026-10-25", "2026-10-30"],
+  ["2026-11-01", "2026-11-09"],
+  ["2026-11-11", "2026-11-11"],
+  ["2026-11-16", "2026-11-18"],
+  ["2026-11-25", "2026-11-27"],
+  ["2026-11-30", "2026-11-30"],
+  ["2026-12-03", "2026-12-05"],
+  ["2026-12-07", "2026-12-07"],
+  ["2026-12-10", "2026-12-11"],
+  ["2026-12-14", "2026-12-14"],
+  ["2026-12-21", "2026-12-21"],
+  ["2026-12-24", "2026-12-25"],
+  ["2026-12-28", "2026-12-30"],
+];
+
+function buildMuhammedSchedules() {
+  const emptyDays = new Set();
+  for (const [start, end] of MUHAMMED_EMPTY_RANGES) {
+    for (const day of eachDayOfInterval({ start: parseISO(start), end: parseISO(end) })) {
+      emptyDays.add(format(day, "yyyy-MM-dd"));
+    }
+  }
+
+  const filled = [];
+  for (const day of eachDayOfInterval({ start: parseISO("2026-09-01"), end: parseISO("2026-12-31") })) {
+    const date = format(day, "yyyy-MM-dd");
+    if (!isWorkday(date) || emptyDays.has(date)) continue;
+    filled.push(date);
+  }
+
+  const entries = [];
+  let rangeStart = null;
+  let rangeEnd = null;
+
+  function flush() {
+    if (rangeStart && rangeEnd) {
+      entries.push(["Muhammed", rangeStart, rangeEnd, "dolu", "Dolu"]);
+    }
+    rangeStart = null;
+    rangeEnd = null;
+  }
+
+  for (const date of filled) {
+    if (!rangeStart) {
+      rangeStart = date;
+      rangeEnd = date;
+      continue;
+    }
+    const prev = parseISO(rangeEnd);
+    prev.setDate(prev.getDate() + 1);
+    const nextDay = format(prev, "yyyy-MM-dd");
+    if (date === nextDay) {
+      rangeEnd = date;
+    } else {
+      flush();
+      rangeStart = date;
+      rangeEnd = date;
+    }
+  }
+  flush();
+  return entries;
+}
+
 const schedules = [
-  ["Muhammed", "2026-09-01", "2026-09-25", "dolu", "Dolu"],
-  ["Muhammed", "2026-10-19", "2026-10-20", "dolu", "Dolu"],
-  ["Muhammed", "2026-11-10", "2026-11-10", "dolu", "Dolu"],
-  ["Muhammed", "2026-11-12", "2026-11-13", "dolu", "Dolu"],
-  ["Muhammed", "2026-11-19", "2026-11-24", "dolu", "Dolu"],
-  ["Muhammed", "2026-12-01", "2026-12-02", "dolu", "Dolu"],
-  ["Muhammed", "2026-12-08", "2026-12-09", "dolu", "Dolu"],
-  ["Muhammed", "2026-12-15", "2026-12-18", "dolu", "Dolu"],
-  ["Muhammed", "2026-12-22", "2026-12-23", "dolu", "Dolu"],
-  ["Muhammed", "2026-12-31", "2026-12-31", "dolu", "Dolu"],
+  ...buildMuhammedSchedules(),
   ["Taner", "2026-09-01", "2026-09-01", "dolu", "VK Performans Yönetimi Eğitimi"],
   ["Taner", "2026-09-02", "2026-09-03", "dolu", "Otokar Müşteri Deneyimi Eğitimi 1. Grup"],
   ["Taner", "2026-09-04", "2026-09-04", "dolu", "KPMG Satış Eğitimi"],

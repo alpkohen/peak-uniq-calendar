@@ -13,7 +13,7 @@ export default async function OverviewPage() {
   if (configError) {
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold">Toplu Özet</h2>
+        <h2 className="text-2xl font-semibold">Özet</h2>
         <ErrorBanner title="Yapılandırma hatası" message={configError} />
       </div>
     );
@@ -37,7 +37,7 @@ export default async function OverviewPage() {
     return (
       <>
         <PageHeader
-          title="Toplu Özet"
+          title="Özet"
           subtitle="Satırı açınca o ay hangi müşteride oldukları görünür."
         />
 
@@ -55,7 +55,7 @@ export default async function OverviewPage() {
   } catch (error) {
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold">Toplu Özet</h2>
+        <h2 className="text-2xl font-semibold">Özet</h2>
         <ErrorBanner
           title="Supabase bağlantı hatası"
           message={formatError(error)}

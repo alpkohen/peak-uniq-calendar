@@ -7,13 +7,15 @@ const navItems = [
   { href: "/overview", label: "Özet" },
   { href: "/", label: "Takvim" },
   { href: "/data", label: "Veriler" },
+  { href: "/clients", label: "Fiyat" },
+  { href: "/revenue", label: "Gelir" },
 ];
 
 export function MainNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap gap-1 sm:gap-1.5">
+    <nav className="app-nav" aria-label="Ana menü">
       {navItems.map((item) => {
         const active =
           item.href === "/"
@@ -24,11 +26,7 @@ export function MainNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-              active
-                ? "bg-blue-600 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            }`}
+            data-active={active ? "true" : undefined}
           >
             {item.label}
           </Link>

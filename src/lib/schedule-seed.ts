@@ -1,4 +1,4 @@
-import { eachDayOfInterval, format, parseISO } from "date-fns";
+import { addDays, eachDayOfInterval, format, parseISO } from "date-fns";
 import { isWorkday } from "./holidays";
 
 type ScheduleType = "dolu" | "izin" | "tatil";
@@ -11,20 +11,86 @@ type ScheduleEntry = {
   title: string;
 };
 
-export const BUILTIN_SCHEDULES: ScheduleEntry[] = [
-  // Muhammed (2026): listed days are empty; remaining workdays are full
-  { trainer: "Muhammed", start: "2026-09-01", end: "2026-09-25", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-10-19", end: "2026-10-20", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-11-10", end: "2026-11-10", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-11-12", end: "2026-11-13", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-11-19", end: "2026-11-24", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-12-01", end: "2026-12-02", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-12-08", end: "2026-12-09", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-12-15", end: "2026-12-18", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-12-22", end: "2026-12-23", type: "dolu", title: "Dolu" },
-  { trainer: "Muhammed", start: "2026-12-31", end: "2026-12-31", type: "dolu", title: "Dolu" },
+/** Muhammed: these workdays are empty; all other workdays Sep–Dec 2026 are Dolu. */
+const MUHAMMED_EMPTY_RANGES: Array<{ start: string; end: string }> = [
+  { start: "2026-09-28", end: "2026-09-30" },
+  { start: "2026-10-01", end: "2026-10-18" },
+  { start: "2026-10-21", end: "2026-10-23" },
+  { start: "2026-10-25", end: "2026-10-30" },
+  { start: "2026-11-01", end: "2026-11-09" },
+  { start: "2026-11-11", end: "2026-11-11" },
+  { start: "2026-11-16", end: "2026-11-18" },
+  { start: "2026-11-25", end: "2026-11-27" },
+  { start: "2026-11-30", end: "2026-11-30" },
+  { start: "2026-12-03", end: "2026-12-05" },
+  { start: "2026-12-07", end: "2026-12-07" },
+  { start: "2026-12-10", end: "2026-12-11" },
+  { start: "2026-12-14", end: "2026-12-14" },
+  { start: "2026-12-21", end: "2026-12-21" },
+  { start: "2026-12-24", end: "2026-12-25" },
+  { start: "2026-12-28", end: "2026-12-30" },
+];
 
-  // Taner (2026)
+function buildMuhammedSchedules(): ScheduleEntry[] {
+  const emptyDays = new Set<string>();
+  for (const { start, end } of MUHAMMED_EMPTY_RANGES) {
+    const days = eachDayOfInterval({ start: parseISO(start), end: parseISO(end) });
+    for (const day of days) {
+      emptyDays.add(format(day, "yyyy-MM-dd"));
+    }
+  }
+
+  const filled: string[] = [];
+  const days = eachDayOfInterval({
+    start: parseISO("2026-09-01"),
+    end: parseISO("2026-12-31"),
+  });
+  for (const day of days) {
+    const date = format(day, "yyyy-MM-dd");
+    if (!isWorkday(date) || emptyDays.has(date)) continue;
+    filled.push(date);
+  }
+
+  const entries: ScheduleEntry[] = [];
+  let rangeStart: string | null = null;
+  let rangeEnd: string | null = null;
+
+  function flush() {
+    if (rangeStart && rangeEnd) {
+      entries.push({
+        trainer: "Muhammed",
+        start: rangeStart,
+        end: rangeEnd,
+        type: "dolu",
+        title: "Dolu",
+      });
+    }
+    rangeStart = null;
+    rangeEnd = null;
+  }
+
+  for (const date of filled) {
+    if (!rangeStart) {
+      rangeStart = date;
+      rangeEnd = date;
+      continue;
+    }
+    const nextDay = format(addDays(parseISO(rangeEnd!), 1), "yyyy-MM-dd");
+    if (date === nextDay) {
+      rangeEnd = date;
+    } else {
+      flush();
+      rangeStart = date;
+      rangeEnd = date;
+    }
+  }
+  flush();
+
+  return entries;
+}
+
+export const BUILTIN_SCHEDULES: ScheduleEntry[] = [
+  ...buildMuhammedSchedules(),
   { trainer: "Taner", start: "2026-09-01", end: "2026-09-01", type: "dolu", title: "VK Performans Yönetimi Eğitimi" },
   { trainer: "Taner", start: "2026-09-02", end: "2026-09-03", type: "dolu", title: "Otokar Müşteri Deneyimi Eğitimi 1. Grup" },
   { trainer: "Taner", start: "2026-09-04", end: "2026-09-04", type: "dolu", title: "KPMG Satış Eğitimi" },

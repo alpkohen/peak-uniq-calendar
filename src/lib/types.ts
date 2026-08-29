@@ -18,6 +18,20 @@ export type Client = {
   notes: string | null;
 };
 
+export type TrainerFeeMode = "percent" | "fixed";
+
+export type ClientPricing = {
+  client_id: string;
+  sale_price_per_day: number;
+  trainer_fee_mode: TrainerFeeMode;
+  trainer_fee_value: number;
+  updated_at: string;
+};
+
+export type ClientWithPricing = Client & {
+  pricing: ClientPricing | null;
+};
+
 export type Booking = {
   id: string;
   trainer_id: string;

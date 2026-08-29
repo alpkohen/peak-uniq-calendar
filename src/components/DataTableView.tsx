@@ -49,23 +49,26 @@ export function DataTableView({ trainers, bookings }: Props) {
     });
   }
 
+  const navButtonClass = (active: boolean) =>
+    `rounded-lg px-3 py-2 text-sm font-medium transition ${
+      active
+        ? "bg-blue-600 text-white shadow-sm"
+        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+    }`;
+
   return (
-    <div className="flex gap-4 lg:gap-6">
+    <div className="flex gap-6">
       <aside className="sticky top-24 z-20 hidden h-fit w-[132px] shrink-0 sm:block">
-        <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+        <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
           Kişi
         </p>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           {trainers.map((trainer) => (
             <button
               key={trainer.id}
               type="button"
               onClick={() => jumpTo(trainer.id)}
-              className={`rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
-                activeId === trainer.id
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-              }`}
+              className={`w-full text-left ${navButtonClass(activeId === trainer.id)}`}
             >
               {trainer.full_name}
             </button>
@@ -74,17 +77,13 @@ export function DataTableView({ trainers, bookings }: Props) {
       </aside>
 
       <div className="min-w-0 flex-1 space-y-6">
-        <div className="flex gap-1.5 overflow-x-auto sm:hidden">
+        <div className="flex gap-1 overflow-x-auto sm:hidden">
           {trainers.map((trainer) => (
             <button
               key={trainer.id}
               type="button"
               onClick={() => jumpTo(trainer.id)}
-              className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${
-                activeId === trainer.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-700 ring-1 ring-slate-200"
-              }`}
+              className={`shrink-0 ${navButtonClass(activeId === trainer.id)}`}
             >
               {trainer.full_name}
             </button>
@@ -100,17 +99,17 @@ export function DataTableView({ trainers, bookings }: Props) {
               className="scroll-mt-28"
             >
               <div className="card overflow-hidden">
-                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
-                  <h2 className="text-base font-bold text-slate-900">
+                <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+                  <h2 className="text-lg font-bold text-slate-900">
                     {trainer.full_name}
                   </h2>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-400">
                     {rows.length} kayıt
                   </span>
                 </div>
 
                 {rows.length === 0 ? (
-                  <p className="px-4 py-8 text-sm text-slate-500">
+                  <p className="px-5 py-8 text-sm text-slate-500">
                     Bu kişi için kayıt yok.
                   </p>
                 ) : (
@@ -130,16 +129,16 @@ export function DataTableView({ trainers, bookings }: Props) {
                       <tbody>
                         {rows.map((row) => (
                           <tr key={`${row.start}-${row.label}-${row.kind}`}>
-                            <td className="sticky left-0 z-10 bg-white px-4 py-3 font-semibold text-slate-800">
+                            <td className="sticky left-0 z-10 bg-white px-4 py-3 font-medium text-slate-900">
                               <Link
                                 href={`/?trainer=${trainer.id}&month=${row.start.slice(0, 7)}`}
-                                className="hover:text-blue-600"
+                                className="text-blue-600 hover:underline"
                               >
                                 {trainer.full_name}
                               </Link>
                             </td>
                             <td className="px-4 py-3">
-                              <div className="font-medium text-slate-800">
+                              <div className="font-medium text-slate-900">
                                 {row.label}
                               </div>
                               {row.place && (
@@ -147,27 +146,22 @@ export function DataTableView({ trainers, bookings }: Props) {
                                   {row.place}
                                 </div>
                               )}
-                              {row.title && row.title !== row.label && (
-                                <div className="mt-0.5 text-xs text-slate-400">
-                                  {row.title}
-                                </div>
-                              )}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-slate-700">
+                            <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                               {formatAssignmentDates(row.start, row.end)}
                             </td>
-                            <td className="px-4 py-3 text-slate-700">
+                            <td className="px-4 py-3 text-slate-600">
                               {assignmentWorkdays(row.start, row.end)} gün
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                className={`inline-block rounded px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${
                                   row.kind === "block"
-                                    ? "bg-slate-200 text-slate-700"
-                                    : "bg-emerald-50 text-emerald-800"
+                                    ? "border border-slate-200 bg-slate-100 text-slate-600"
+                                    : "border border-blue-200 bg-blue-50 text-blue-800"
                                 }`}
                               >
-                                {row.kind === "block" ? "Blok / izin" : "Teslimat"}
+                                {row.kind === "block" ? "Blok" : "Teslimat"}
                               </span>
                             </td>
                           </tr>

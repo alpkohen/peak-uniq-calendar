@@ -2,13 +2,12 @@ import Link from "next/link";
 
 export function Logo() {
   return (
-    <Link href="/overview" className="block">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-        Peak
-      </p>
-      <p className="text-sm font-bold leading-tight text-slate-900">
-        Kapasite Takip
-      </p>
+    <Link href="/overview" className="app-logo">
+      <span className="app-logo-mark">P</span>
+      <span>
+        <span className="app-logo-kicker">Peak</span>
+        <span className="app-logo-name">Kapasite Takip</span>
+      </span>
     </Link>
   );
 }

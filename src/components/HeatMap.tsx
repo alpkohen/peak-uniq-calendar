@@ -8,6 +8,7 @@ import {
   formatAssignmentDates,
   type AssignmentBlock,
 } from "@/lib/assignments";
+import { CapacityTotalsTable } from "@/components/CapacityTotalsTable";
 import {
   CAPACITY_LEGEND_BANDS,
   formatDeliveryCapacity,
@@ -69,10 +70,9 @@ export function HeatMap({ months, capacities, bookings }: Props) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <p className="text-sm text-slate-500">
-        + ile satırı açın: o ay hangi müşteride oldukları görünür. Yüzdeye
-        tıklayınca takvime gidersiniz.
+        + ile satırı açın: o ay hangi müşteride oldukları görünür.
       </p>
 
       <div className="card overflow-x-auto">
@@ -104,11 +104,6 @@ export function HeatMap({ months, capacities, bookings }: Props) {
                           type="button"
                           onClick={() => toggle(trainerId)}
                           aria-expanded={expanded}
-                          aria-label={
-                            expanded
-                              ? `${trainerName} detayını kapat`
-                              : `${trainerName} detayını aç`
-                          }
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-base font-bold text-slate-700 hover:bg-slate-50"
                         >
                           {expanded ? "−" : "+"}
@@ -130,7 +125,7 @@ export function HeatMap({ months, capacities, bookings }: Props) {
                         <td key={month} className="p-1.5 align-top">
                           <Link
                             href={`/?trainer=${trainerId}&month=${clampCalendarMonth(month)}`}
-                            className={`flex h-16 w-full flex-col items-center justify-center rounded-lg text-xs font-bold transition hover:ring-2 hover:ring-blue-400 ${occupancyColor(cap?.occupancy ?? 0)}`}
+                            className={`flex h-16 w-full flex-col items-center justify-center rounded-lg text-xs font-bold transition hover:ring-2 hover:ring-blue-400 ${occupancyColor(cap?.occupancy ?? 0, cap?.overTarget)}`}
                             title={
                               cap
                                 ? formatDeliveryCapacity(cap.deliveryDays)
@@ -186,8 +181,8 @@ export function HeatMap({ months, capacities, bookings }: Props) {
 
       <div className="space-y-2 text-xs text-slate-500">
         <p>
-          Doluluk oranı = teslimat günü ÷ {MAX_MONTHLY_DELIVERY_DAYS}. Referans
-          çizgileri: 5 (%25), 10 (%50), 15 (%75), 20 (%100) gün.
+          Doluluk = teslimat günü ÷ {MAX_MONTHLY_DELIVERY_DAYS}. Referans: 5
+          (%25), 10 (%50), 15 (%75), 20 (%100).
         </p>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
           {CAPACITY_LEGEND_BANDS.map((item) => (
@@ -200,6 +195,8 @@ export function HeatMap({ months, capacities, bookings }: Props) {
           ))}
         </div>
       </div>
+
+      <CapacityTotalsTable months={months} capacities={capacities} />
     </div>
   );
 }

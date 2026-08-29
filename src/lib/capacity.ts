@@ -67,10 +67,11 @@ export function calculateCapacity(
 }
 
 export function occupancyFromDeliveryDays(deliveryDays: number): number {
-  return Math.min(deliveryDays / MAX_MONTHLY_DELIVERY_DAYS, 1);
+  return deliveryDays / MAX_MONTHLY_DELIVERY_DAYS;
 }
 
-export function occupancyColor(occupancy: number): string {
+export function occupancyColor(occupancy: number, overTarget = false): string {
+  if (overTarget) return "bg-red-600 text-white";
   const pct = Math.min(occupancy, 1);
   if (pct >= 1) return "bg-red-500 text-white";
   if (pct >= 0.75) return "bg-orange-400 text-white";
@@ -81,7 +82,7 @@ export function occupancyColor(occupancy: number): string {
 }
 
 export function formatOccupancy(occupancy: number): string {
-  return `%${Math.min(Math.round(occupancy * 100), 100)}`;
+  return `%${Math.round(occupancy * 100)}`;
 }
 
 export function formatDeliveryCapacity(deliveryDays: number): string {
@@ -129,13 +130,57 @@ export function matchClient(
   return null;
 }
 
-export function clientColor(name: string): string {
+const CLIENT_COLOR_PALETTE = [
+  { bg: "#93c5fd", border: "#2563eb" },
+  { bg: "#fda4af", border: "#e11d48" },
+  { bg: "#6ee7b7", border: "#059669" },
+  { bg: "#fcd34d", border: "#d97706" },
+  { bg: "#c4b5fd", border: "#7c3aed" },
+  { bg: "#67e8f9", border: "#0891b2" },
+  { bg: "#fdba74", border: "#ea580c" },
+  { bg: "#f9a8d4", border: "#db2777" },
+  { bg: "#bef264", border: "#65a30d" },
+  { bg: "#a5b4fc", border: "#4f46e5" },
+  { bg: "#5eead4", border: "#0d9488" },
+  { bg: "#e879f9", border: "#c026d3" },
+  { bg: "#7dd3fc", border: "#0284c7" },
+  { bg: "#f87171", border: "#dc2626" },
+  { bg: "#86efac", border: "#16a34a" },
+  { bg: "#d8b4fe", border: "#9333ea" },
+  { bg: "#fbbf24", border: "#b45309" },
+  { bg: "#fb7185", border: "#be123c" },
+  { bg: "#34d399", border: "#047857" },
+  { bg: "#38bdf8", border: "#0369a1" },
+] as const;
+
+function hashClientName(name: string): number {
+  const normalized = name.trim().toLocaleLowerCase("tr-TR");
   let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < normalized.length; i++) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue} 65% 88%)`;
+  return Math.abs(hash);
+}
+
+function clientPaletteEntry(name: string) {
+  return CLIENT_COLOR_PALETTE[hashClientName(name) % CLIENT_COLOR_PALETTE.length];
+}
+
+export function clientColor(name: string): string {
+  return clientPaletteEntry(name).bg;
+}
+
+export function clientBorderColor(name: string): string {
+  return clientPaletteEntry(name).border;
+}
+
+/** Eğitmen satırları için açık arka plan rengi */
+export function trainerRowColor(name: string): string {
+  return clientPaletteEntry(name).bg;
+}
+
+export function trainerRowBorderColor(name: string): string {
+  return clientPaletteEntry(name).border;
 }
 
 export function calendarDayLabel(

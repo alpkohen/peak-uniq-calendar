@@ -7,7 +7,7 @@ import {
 } from "date-fns";
 import { tr } from "date-fns/locale";
 import type { BookingWithClient } from "@/lib/types";
-import { clientColor } from "@/lib/capacity";
+import { clientBorderColor, clientColor } from "@/lib/capacity";
 
 type Props = {
   trainers: { id: string; full_name: string }[];
@@ -103,15 +103,16 @@ function SlotCell({ booking }: { booking?: BookingWithClient }) {
       ? booking.raw_title ?? "Blok"
       : booking.client?.name ?? booking.raw_title ?? "Atanmamış";
 
+  const key = booking.client?.name ?? label;
   const bg =
-    booking.kind === "block"
-      ? "#e2e8f0"
-      : clientColor(booking.client?.name ?? label);
+    booking.kind === "block" ? "#e2e8f0" : clientColor(key);
+  const border =
+    booking.kind === "block" ? "#94a3b8" : clientBorderColor(key);
 
   return (
     <div
-      className="flex h-8 items-center gap-1 rounded px-2 text-[10px] font-medium text-slate-800"
-      style={{ backgroundColor: bg }}
+      className="flex h-8 items-center gap-1 rounded border-2 px-2 text-[10px] font-medium text-slate-900"
+      style={{ backgroundColor: bg, borderColor: border }}
       title={booking.raw_title ?? undefined}
     >
       <span className="shrink-0 opacity-60">{slotLabel(booking.slot)}</span>

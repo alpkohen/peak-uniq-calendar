@@ -17,15 +17,13 @@ import { tr } from "date-fns/locale";
 import {
   calculateCapacity,
   calendarDayLabel,
+  clientBorderColor,
   clientColor,
   formatDeliveryCapacity,
   remainingDeliveryDays,
 } from "@/lib/capacity";
 import { isWorkday } from "@/lib/holidays";
-import {
-  CALENDAR_START_MONTH,
-  clampCalendarMonth,
-} from "@/lib/slots";
+import { CALENDAR_START_MONTH, clampCalendarMonth } from "@/lib/slots";
 import type { BookingWithClient, Trainer } from "@/lib/types";
 
 type Props = {
@@ -84,17 +82,17 @@ export function TrainerCalendarView({
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-1">
         {trainers.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => navigate(month, item.id)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
               item.id === trainer.id
                 ? "bg-blue-600 text-white shadow-sm"
-                : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             {item.full_name}
@@ -102,7 +100,7 @@ export function TrainerCalendarView({
         ))}
       </div>
 
-      <div className="card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="card flex flex-col gap-5 p-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center justify-center gap-2 sm:justify-start">
           <button
             type="button"
@@ -110,11 +108,11 @@ export function TrainerCalendarView({
             onClick={() =>
               navigate(format(addMonths(monthStart, -1), "yyyy-MM"), trainer.id)
             }
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ←
           </button>
-          <h3 className="min-w-[180px] text-center text-lg font-bold capitalize text-slate-900">
+          <h3 className="min-w-[180px] text-center text-xl font-bold capitalize text-slate-900">
             {monthLabel(month)}
           </h3>
           <button
@@ -122,7 +120,7 @@ export function TrainerCalendarView({
             onClick={() =>
               navigate(format(addMonths(monthStart, 1), "yyyy-MM"), trainer.id)
             }
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           >
             →
           </button>
@@ -145,18 +143,18 @@ export function TrainerCalendarView({
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <div className="min-w-[720px]">
-            <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
+            <div className="grid grid-cols-7 border-b border-slate-200">
               {WEEKDAYS.map((day) => (
                 <div
                   key={day}
-                  className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
+                  className="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500"
                 >
                   {day}
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-7 auto-rows-[minmax(96px,auto)]">
+            <div className="grid auto-rows-[minmax(96px,auto)] grid-cols-7">
               {days.map((day) => {
                 const dateStr = format(day, "yyyy-MM-dd");
                 const inMonth = isSameMonth(day, monthStart);
@@ -169,11 +167,11 @@ export function TrainerCalendarView({
                     key={dateStr}
                     className={`flex flex-col border-b border-r border-slate-200 p-2 ${
                       inMonth ? "bg-white" : "bg-slate-50"
-                    } ${!workday && inMonth ? "bg-slate-100/70" : ""}`}
+                    }`}
                   >
                     <div
-                      className={`mb-1.5 text-right text-xs font-semibold ${
-                        inMonth ? "text-slate-700" : "text-slate-300"
+                      className={`mb-1.5 text-right text-xs ${
+                        inMonth ? "text-slate-500" : "text-slate-300"
                       }`}
                     >
                       {format(day, "d")}
@@ -182,7 +180,7 @@ export function TrainerCalendarView({
                       {inMonth && workday ? (
                         <DayCell am={am} pm={pm} />
                       ) : inMonth && !workday ? (
-                        <p className="flex flex-1 items-center justify-center text-center text-[11px] text-slate-400">
+                        <p className="flex flex-1 items-center justify-center text-center text-[11px] text-slate-300">
                           Tatil
                         </p>
                       ) : null}
@@ -196,14 +194,15 @@ export function TrainerCalendarView({
       </div>
 
       <div className="flex flex-wrap gap-4 text-xs text-slate-500">
-        <Legend color="bg-emerald-100 ring-1 ring-emerald-200" label="Teslimat / müşteri" />
-        <Legend color="bg-slate-200" label="Blok / izin" />
-        <Legend color="border border-dashed border-slate-300 bg-white" label="Boş" />
+        <Legend swatchClass="bg-slate-100 border-slate-200" label="Blok / izin" />
+        <Legend swatchClass="bg-white border-slate-300" label="Boş" dashed />
+        <span className="text-slate-400">·</span>
+        <span>Teslimat günleri müşteriye göre renkli</span>
       </div>
 
       <p className="text-sm text-slate-500">
-        Tüm eğitmenlerin doluluğu ve müşteri detayı için{" "}
-        <Link href="/overview" className="font-semibold text-blue-600 hover:underline">
+        Tüm eğitmenlerin doluluğu için{" "}
+        <Link href="/overview" className="font-medium text-blue-600 hover:underline">
           Özet
         </Link>
         .
@@ -214,9 +213,11 @@ export function TrainerCalendarView({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-100">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="text-base font-bold text-slate-900">{value}</p>
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-lg font-semibold text-slate-900">{value}</p>
     </div>
   );
 }
@@ -230,13 +231,13 @@ function DayCell({
 }) {
   if (!am && !pm) {
     return (
-      <div className="flex flex-1 items-center justify-center rounded-md border border-dashed border-slate-200 bg-slate-50/50 px-1 py-2 text-[11px] text-slate-400">
+      <div className="flex flex-1 items-center justify-center rounded border border-dashed border-slate-200 bg-slate-50 px-1 py-2 text-[11px] text-slate-400">
         Boş
       </div>
     );
   }
 
-  const lines: string[] = [];
+  const segments: Array<{ label: string; booking: BookingWithClient }> = [];
   const amLabel = am
     ? calendarDayLabel(am.kind, am.raw_title, am.client?.name)
     : null;
@@ -244,38 +245,90 @@ function DayCell({
     ? calendarDayLabel(pm.kind, pm.raw_title, pm.client?.name)
     : null;
 
-  if (amLabel && pmLabel && amLabel === pmLabel) {
-    lines.push(amLabel);
+  if (amLabel && pmLabel && amLabel === pmLabel && am && pm) {
+    segments.push({ label: amLabel, booking: am });
   } else {
-    if (amLabel) lines.push(amLabel);
-    if (pmLabel && pmLabel !== amLabel) lines.push(pmLabel);
+    if (am && amLabel) segments.push({ label: amLabel, booking: am });
+    if (pm && pmLabel && pmLabel !== amLabel) {
+      segments.push({ label: pmLabel, booking: pm });
+    }
   }
 
   const primary = am ?? pm!;
   const isBlock = primary.kind === "block";
-  const bg = isBlock
-    ? "#e2e8f0"
-    : clientColor(primary.client?.name ?? lines[0] ?? "");
+
+  if (isBlock) {
+    return (
+      <div
+        className="flex flex-1 flex-col justify-center rounded border border-slate-200 bg-slate-100 px-1.5 py-1.5 text-[11px] font-medium leading-tight text-slate-600"
+        title={[am?.raw_title, pm?.raw_title].filter(Boolean).join(" / ")}
+      >
+        {segments.map((seg, index) => (
+          <div key={`${seg.label}-${index}`} className="truncate">
+            {seg.label}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (segments.length === 1) {
+    const { label, booking } = segments[0];
+    const key = booking.client?.name ?? label;
+    return (
+      <div
+        className="flex flex-1 flex-col justify-center rounded border-2 px-1.5 py-1.5 text-[11px] font-medium leading-tight text-slate-900"
+        style={{
+          backgroundColor: clientColor(key),
+          borderColor: clientBorderColor(key),
+        }}
+        title={booking.raw_title ?? undefined}
+      >
+        <div className="truncate">{label}</div>
+      </div>
+    );
+  }
 
   return (
     <div
-      className="flex flex-1 flex-col justify-center rounded-md px-1.5 py-1.5 text-[11px] font-semibold leading-tight text-slate-800 ring-1 ring-black/5"
-      style={{ backgroundColor: bg }}
+      className="flex flex-1 flex-col gap-0.5"
       title={[am?.raw_title, pm?.raw_title].filter(Boolean).join(" / ")}
     >
-      {lines.map((line, index) => (
-        <div key={`${line}-${index}`} className="truncate">
-          {line}
-        </div>
-      ))}
+      {segments.map((seg, index) => {
+        const key = seg.booking.client?.name ?? seg.label;
+        return (
+          <div
+            key={`${seg.label}-${index}`}
+            className="flex flex-1 items-center rounded border-2 px-1 py-0.5 text-[10px] font-medium leading-tight text-slate-900"
+            style={{
+              backgroundColor: clientColor(key),
+              borderColor: clientBorderColor(key),
+            }}
+          >
+            <span className="truncate">{seg.label}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({
+  swatchClass,
+  label,
+  dashed,
+}: {
+  swatchClass: string;
+  label: string;
+  dashed?: boolean;
+}) {
   return (
     <span className="flex items-center gap-2">
-      <span className={`inline-block h-3.5 w-3.5 rounded ${color}`} />
+      <span
+        className={`inline-block h-3.5 w-3.5 rounded border ${swatchClass} ${
+          dashed ? "border-dashed" : ""
+        }`}
+      />
       {label}
     </span>
   );
