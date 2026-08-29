@@ -12,16 +12,17 @@ type ScheduleEntry = {
 };
 
 export const BUILTIN_SCHEDULES: ScheduleEntry[] = [
-  // Muhammed (2026)
-  { trainer: "Muhammed", start: "2026-09-28", end: "2026-09-30", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-10-01", end: "2026-10-18", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-10-21", end: "2026-10-23", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-10-25", end: "2026-10-30", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-11-01", end: "2026-11-09", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-11-11", end: "2026-11-11", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-11-16", end: "2026-11-18", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-11-25", end: "2026-11-27", type: "dolu", title: "Program" },
-  { trainer: "Muhammed", start: "2026-11-30", end: "2026-11-30", type: "dolu", title: "Program" },
+  // Muhammed (2026): listed days are empty; remaining workdays are full
+  { trainer: "Muhammed", start: "2026-09-01", end: "2026-09-25", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-10-19", end: "2026-10-20", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-11-10", end: "2026-11-10", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-11-12", end: "2026-11-13", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-11-19", end: "2026-11-24", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-12-01", end: "2026-12-02", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-12-08", end: "2026-12-09", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-12-15", end: "2026-12-18", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-12-22", end: "2026-12-23", type: "dolu", title: "Dolu" },
+  { trainer: "Muhammed", start: "2026-12-31", end: "2026-12-31", type: "dolu", title: "Dolu" },
 
   // Taner (2026)
   { trainer: "Taner", start: "2026-09-01", end: "2026-09-01", type: "dolu", title: "VK Performans Yönetimi Eğitimi" },
